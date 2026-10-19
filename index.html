@@ -3,8 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<link rel="apple-touch-icon" href="Icon">
-<link rel="icon" type="image/png" href="Icon">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Head Loss">
+<meta name="theme-color" content="#ffffff">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Head Loss Calculator</title>
 <style>
 :root{--bg:#fff;--card:#fff;--text:#2a1a1c;--muted:#7a5f63;--line:#f0d6da;--accent:#c8102e;--ok:#18794e;--okbg:#e3f5ec;--bad:#8f0a1f;--badbg:#fde8eb;--hi:#fdecee;
@@ -59,6 +66,10 @@ html:root[data-skin="safety"] .card{border-radius:3px}
 .q{width:22px;height:22px;margin-left:6px;padding:0;border:2px solid #111;border-radius:50%;background:#ffd60a;color:#111;font:800 13px/1 system-ui,sans-serif;cursor:pointer;vertical-align:middle}
 .q[aria-expanded=true]{background:#111;color:#ffd60a;border-color:#111}
 .hint{font-size:12px;color:var(--muted);background:var(--hi);border-left:3px solid #111;padding:5px 8px;margin:4px 0 0;border-radius:2px}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+button,select,input,label{touch-action:manipulation}
+body{overscroll-behavior-y:none;padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+@media (max-width:720px){input,select{font-size:16px}}
 .chk{display:flex;align-items:center;gap:8px;margin:12px 0 0;color:var(--text);font-size:13px;cursor:pointer}
 .chk input{width:auto;margin:0;padding:0;accent-color:#111}
 #theory h3{margin:20px 0 6px;font-size:15px}
