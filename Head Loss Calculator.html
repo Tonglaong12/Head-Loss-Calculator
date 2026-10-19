@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="th" data-skin="safety">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Head Loss Calculator</title>
+<style>
+:root{--bg:#fff;--card:#fff;--text:#2a1a1c;--muted:#7a5f63;--line:#f0d6da;--accent:#c8102e;--ok:#18794e;--okbg:#e3f5ec;--bad:#8f0a1f;--badbg:#fde8eb;--hi:#fdecee;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1a1012;--card:#241618;--text:#f5eaec;--muted:#b89ba0;--line:#3d2529;--accent:#ff5a70;--ok:#5fd39b;--okbg:#14392a;--bad:#ff8a80;--badbg:#42201f;--hi:#3a1a20;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1a1012;--card:#241618;--text:#f5eaec;--muted:#b89ba0;--line:#3d2529;--accent:#ff5a70;--ok:#5fd39b;--okbg:#14392a;--bad:#ff8a80;--badbg:#42201f;--hi:#3a1a20;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Thai",sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 2px;color:var(--accent)}
+.sub{color:var(--muted);margin:0 0 16px;font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:12px;padding:16px}
+.card h2{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+label{display:block;font-size:13px;color:var(--muted);margin:10px 0 4px}
+.row{display:flex;gap:8px;align-items:center}
+input,select{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--text);font:inherit}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:0}
+.unit{min-width:44px;color:var(--muted);font-size:13px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.total{background:var(--hi);border-radius:10px;padding:14px;margin-bottom:12px}
+.total .v{font-size:32px;font-weight:700;color:var(--accent)}
+.total .l{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:7px 0;border-bottom:1px solid var(--line)}
+td:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:700}
+.ok{background:var(--okbg);color:var(--ok)}.bad{background:var(--badbg);color:var(--bad)}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+.scroll{overflow-x:auto}
+.sel{background:var(--hi)}
+.msg{margin-top:12px;padding:10px 12px;border-radius:8px;font-size:13px}
+body{background-image:var(--grid,none);background-size:24px 24px}
+td:last-child,.total .v,input[type=number]{font-family:var(--num,inherit)}
+
+
+
+
+
+
+
+html:root[data-skin="safety"]{--bg:#fff;--card:#fff;--text:#111;--muted:#555;--line:#d4d4d4;--accent:#111;--ok:#18794e;--okbg:#e3f5ec;--bad:#b00020;--badbg:#fde7ea;--hi:#ffe066;--num:ui-monospace,Menlo,Consolas,monospace;color-scheme:light}
+html:root[data-skin="safety"] .card{border-radius:3px}
+.btn{display:inline-flex;align-items:center;gap:8px;margin:0 0 16px;padding:9px 16px;border:2px solid #111;border-radius:3px;background:var(--hi);color:#111;font:700 14px system-ui,"Noto Sans Thai",sans-serif;cursor:pointer}
+.btn:hover{background:#ffd633}
+.req{margin-left:2px;color:var(--text);font-weight:700}
+#q,#d,#t,#h,#l{background:#fff3b0;border:2px solid #111}
+.opt{display:inline-block;margin-left:6px;padding:0 8px;border:1px solid #6f95bd;border-radius:99px;background:#dcebfa;color:#12456f;font:700 11px/18px system-ui,sans-serif}
+.q{width:22px;height:22px;margin-left:6px;padding:0;border:2px solid #111;border-radius:50%;background:#ffd60a;color:#111;font:800 13px/1 system-ui,sans-serif;cursor:pointer;vertical-align:middle}
+.q[aria-expanded=true]{background:#111;color:#ffd60a;border-color:#111}
+.hint{font-size:12px;color:var(--muted);background:var(--hi);border-left:3px solid #111;padding:5px 8px;margin:4px 0 0;border-radius:2px}
+.chk{display:flex;align-items:center;gap:8px;margin:12px 0 0;color:var(--text);font-size:13px;cursor:pointer}
+.chk input{width:auto;margin:0;padding:0;accent-color:#111}
+#theory h3{margin:20px 0 6px;font-size:15px}
+#theory p,#theory li{margin:6px 0}
+.eq{background:var(--hi);border-left:4px solid var(--accent);padding:10px 12px;margin:8px 0;font:600 14px/1.7 var(--num,monospace);overflow-x:auto;white-space:pre}
+#theory a{color:var(--text);font-weight:600;word-break:break-word}
+#theory td:last-child{text-align:left;font-weight:400;font-family:inherit}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.credit{background:var(--hi);color:#111;border:1px solid #111;border-radius:3px;padding:4px 10px;font:700 13px/1.4 var(--num,inherit);white-space:nowrap;margin-top:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><h1>Head Loss Calculator / โปรแกรมคำนวณ Head Loss</h1><div class="credit">By. Tonglaong</div></div>
+<p class="sub">Friction loss in pipe (Darcy–Weisbach, Swamee–Jain) and total head for pump selection</p>
+
+<button type="button" id="thBtn" class="btn">📘 Theory / ทฤษฎีสูตรที่ใช้</button>
+
+<section id="theory" class="card" hidden>
+<h2>Theory / ทฤษฎีและสูตรที่ใช้</h2>
+<p>แอปนี้คำนวณ Head loss ในท่อด้วยสมการ <b>Darcy–Weisbach</b> และหา friction factor ด้วยสมการ <b>Swamee–Jain</b></p>
+
+<h3>1. Total Head</h3>
+<div class="eq">Total Head = H_geo + H_pressure + H_velocity + Hf × (1 + margin%)
+Option: Total Head = (H_geo + H_pressure + H_velocity + Hf) × (1 + margin%)</div>
+<p>H_geo = ระยะแนวดิ่ง, H_pressure = แรงดันปลายทาง, H_velocity = velocity head ที่กรอก, Hf = friction loss ในท่อ (หน่วยเมตร)</p>
+
+<h3>2. Velocity and Reynolds number</h3>
+<div class="eq">V  = Q / A = 4Q / (π D²)        (Q in m³/s, D in m)
+Re = V × D / ν                  (1 cSt = 1×10⁻⁶ m²/s)</div>
+
+<h3>3. Darcy–Weisbach equation</h3>
+<div class="eq">Hf = f × (L / D) × V² / (2g)
+Hf = f × 8 L Q² / (π² g D⁵)      (same equation, written with Q)</div>
+<p>f = Darcy friction factor, L = pipe length (m), D = inside diameter (m), g = 9.81 m/s². สมการนี้ใช้ได้กับของไหลทุกชนิดและทุกช่วงการไหล (laminar, transitional, turbulent)</p>
+
+<h3>4. Friction factor (f)</h3>
+<div class="eq">Laminar (Re &lt; 3000):  f = 64 / Re
+
+Turbulent (Swamee–Jain):
+f = 0.25 / [ log10( ε / (3.7 D) + 5.74 / Re^0.9 ) ]²</div>
+<p>ε = absolute roughness (m). Swamee–Jain เป็นสูตรแบบ explicit ที่ประมาณสมการ Colebrook–White ได้ภายในราว 1% จึงไม่ต้องคำนวณวนซ้ำ. ช่วงที่ใช้แม่นโดยทั่วไปคือ Re ราว 5,000–10⁸ และ ε/D ราว 10⁻⁶–10⁻². แอปสลับไปใช้สูตร laminar ที่ Re &lt; 3000 ตามไฟล์ Excel</p>
+
+<h3>5. Safety margin</h3>
+<div class="eq">Hf (design) = Hf × (1 + margin% / 100)      e.g. 15% → × 1.15</div>
+
+<h3>6. Pipe roughness (ε) used</h3>
+<table>
+<tr><td>Plastic</td><td>0.015 mm (1.5×10⁻⁵ m)</td></tr>
+<tr><td>Steel</td><td>0.045 mm (4.5×10⁻⁵ m)</td></tr>
+<tr><td>Fibreglass (Generic)</td><td>0.030 mm (3.0×10⁻⁵ m)</td></tr>
+<tr><td>Flowtite GRP</td><td>0.029 mm (2.9×10⁻⁵ m)</td></tr>
+</table>
+<p class="note">Values are taken from the Excel file.</p>
+
+<h3>7. Worked example</h3>
+<div class="eq">Q = 20 m³/h, D = 80 mm, Steel, L = 68 m, margin 15%
+V  = 1.105 m/s
+Re = 88,419
+f  = 0.0210
+Hf = 1.112 m   →   × 1.15 = 1.278 m</div>
+
+<h3>8. Assumptions and limits</h3>
+<ul>
+<li>Water at ν = 1 cSt (default, editable), g = 9.81 m/s².</li>
+<li>By default L is the horizontal length only, as in the Excel file. Tick "Include vertical pipe in length L" to add the vertical height to L.</li>
+<li>Losses from fittings and valves are not included.</li>
+<li>The diameter is used as the inside diameter. Nominal size can differ from the real inside diameter.</li>
+<li>The 2.5 m/s velocity limit is a check taken from the Excel file.</li>
+<li>The result is an estimate for pump selection. Please verify before final design.</li>
+</ul>
+
+<h3>9. References</h3>
+<ul>
+<li>Swamee, P.K. and Jain, A.K. (1976). Explicit equations for pipe flow problems. Journal of the Hydraulics Division, ASCE, 102, 657–664.</li>
+<li><a href="https://metricgate.com/docs/darcy-weisbach-pipe-flow/" target="_blank" rel="noopener">MetricGate: Darcy–Weisbach pipe flow</a></li>
+<li><a href="https://joaobtj.r-universe.dev/hf/doc/darcy-weisbach-en.html" target="_blank" rel="noopener">hf package: Darcy–Weisbach equations</a></li>
+<li><a href="https://scielo.br/j/eagri/a/QwSJzsRh46PrrJZTskt9FCs/?lang=en" target="_blank" rel="noopener">SciELO: explicit friction factor equations compared with Colebrook</a></li>
+</ul>
+</section>
+
+<div class="grid">
+<div class="card">
+<h2>Inputs / ข้อมูลนำเข้า</h2>
+<div class="two">
+<div><label for="q">Flow rate (Q) / อัตราการไหล</label><div class="row"><input id="q" type="number" min="0" step="any" value="4"><span class="unit">m³/h</span></div></div>
+<div><label for="d">Pipe inside diameter / ขนาดท่อ</label><div class="row"><select id="d"></select></div></div>
+</div>
+<label for="t">Pipe type / ชนิดท่อ</label>
+<select id="t"></select>
+<div class="two">
+<div><label for="h">Vertical height / ระยะแนวดิ่ง</label><div class="row"><input id="h" type="number" step="any" value="4"><span class="unit">m</span></div></div>
+<div><label for="l">Horizontal length / ระยะทางราบ</label><div class="row"><input id="l" type="number" min="0" step="any" value="110"><span class="unit">m</span></div></div>
+</div>
+<div class="two">
+<div><label for="p">Pressure head / แรงดันปลายทาง</label><div class="row"><input id="p" type="number" step="any" value="0"><span class="unit">m</span></div></div>
+<div><label for="vh">Velocity head / เฮดความเร็ว</label><div class="row"><input id="vh" type="number" step="any" value="0"><span class="unit">m</span></div></div>
+</div>
+<div class="two">
+<div><label for="nu">Kinematic viscosity (ν)</label><div class="row"><input id="nu" type="number" min="0.01" step="any" value="1"><span class="unit">cSt</span></div></div>
+<div><label for="sf">Safety factor on friction / ค่าเผื่อ</label><div class="row"><input id="sf" type="number" min="0" step="1" value="15"><span class="unit">%</span></div></div>
+</div>
+<label for="mb">Apply safety margin to / เผื่อ % กับ</label>
+<select id="mb"><option value="f">Friction loss only / เฉพาะ Friction loss</option><option value="t">Total head / Head รวมทั้งหมด</option></select>
+<label class="chk"><input type="checkbox" id="iv"> Include vertical pipe in length L / นับท่อแนวดิ่งในความยาว L</label>
+<div class="note">Defaults match the Excel file: water at 1 cSt, safety margin 15% (factor 1.15), velocity limit 2.5 m/s.</div>
+</div>
+
+<div>
+<div class="card" style="margin-bottom:16px">
+<h2>Result / ผลการคำนวณ</h2>
+<div class="total"><div class="l">Total Head / ผลรวม Head</div><div><span class="v" id="total">–</span> <span class="unit">m</span></div></div>
+<table>
+<tr><td>Geometric head</td><td id="rg">–</td></tr>
+<tr><td>Pressure head</td><td id="rp">–</td></tr>
+<tr><td>Velocity head</td><td id="rv">–</td></tr>
+<tr><td>Friction loss in pipe</td><td id="rf">–</td></tr>
+<tr><td id="rml">Safety margin</td><td id="rm">–</td></tr>
+</table>
+</div>
+<div class="card">
+<h2>Calculated data / ข้อมูลที่คำนวณได้</h2>
+<table>
+<tr><td>Average velocity (m/s)</td><td><span id="vel">–</span> <span id="vbadge"></span></td></tr>
+<tr><td>Reynolds number</td><td id="re">–</td></tr>
+<tr><td>Specific roughness ε (m)</td><td id="eps">–</td></tr>
+<tr><td>Pipe length used (m)</td><td id="lu">–</td></tr>
+<tr><td>Darcy friction factor</td><td id="ff">–</td></tr>
+<tr><td>Head loss – pipe, before factor (m)</td><td id="hl">–</td></tr>
+</table>
+<div id="msg"></div>
+</div>
+</div>
+</div>
+
+<div class="card" style="margin-top:16px">
+<h2>Pumping system diagram / แผนภาพระบบสูบน้ำ</h2>
+<div class="scroll"><svg viewBox="0 0 840 360" width="100%" role="img" aria-label="Pumping system diagram" style="display:block;min-width:640px;height:auto">
+<style>
+.t{fill:var(--text);font:600 13px system-ui,"Noto Sans Thai",sans-serif}
+.s{fill:var(--muted);font:12px system-ui,"Noto Sans Thai",sans-serif}
+.tl{fill:#0a7ea4;font:700 13px system-ui,"Noto Sans Thai",sans-serif}
+.am{fill:#b8860b;font:700 10px system-ui,sans-serif}
+.d{stroke:var(--text);stroke-width:1.5;fill:none}
+.pp{fill:none;stroke:#1d4d73;stroke-width:15;stroke-linejoin:round}
+.pi{fill:none;stroke:#7cc8ee;stroke-width:11;stroke-linejoin:round}
+.pf{fill:none;stroke:#fff;stroke-width:2.5;stroke-dasharray:6 14;animation:fl 1s linear infinite}
+@keyframes fl{to{stroke-dashoffset:-20}}
+.lv{transform-box:fill-box;transform-origin:50% 100%}
+.lv1{transform:scaleY(.6);animation:drain 12s linear infinite}
+.lv2{transform:scaleY(.5);animation:rise 12s linear infinite}
+@keyframes drain{from{transform:scaleY(.85)}to{transform:scaleY(.3)}}
+@keyframes rise{from{transform:scaleY(.2)}to{transform:scaleY(.9)}}
+.spin{transform-box:fill-box;transform-origin:center;animation:sp 1.2s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.pf,.lv1,.lv2,.spin{animation:none}}
+</style>
+
+<!-- pipes -->
+<path class="pp" d="M170 276 H262"/><path class="pi" d="M170 276 H262"/><path class="pf" d="M170 276 H262"/>
+<path class="pp" d="M290 242 V100 Q290 84 306 84 H579 Q595 84 595 100 V150"/>
+<path class="pi" d="M290 242 V100 Q290 84 306 84 H579 Q595 84 595 100 V150"/>
+<path class="pf" d="M290 242 V100 Q290 84 306 84 H579 Q595 84 595 100 V150"/>
+<path d="M198 245 l12 5 -12 5z M263 176 l5 -12 5 12z M424 103 l12 5 -12 5z" fill="#7cc8ee"/>
+<path d="M595 150 V268" stroke="#7cc8ee" stroke-width="5" fill="none"/>
+<path class="pf" d="M595 150 V268"/>
+
+<!-- source tank -->
+<rect class="lv lv1" x="42" y="192" width="126" height="116" fill="#6ec1ea" opacity=".92"/>
+<rect x="40" y="190" width="130" height="120" fill="#fff" opacity=".14" stroke="#7a6a3a" stroke-width="3"/>
+<path d="M40 190 L54 180 H184 V300 L170 310 M170 190 L184 180 M160 220 h8 M160 250 h8 M160 280 h8" fill="none" stroke="#7a6a3a" stroke-width="2" opacity=".7"/>
+<text class="t" x="105" y="150" text-anchor="middle">SOURCE TANK</text>
+<text class="s" x="105" y="166" text-anchor="middle">ถังต้นทาง</text>
+<text class="am" x="105" y="326" text-anchor="middle">▼ LEVEL DOWN</text>
+
+<!-- receiving tank on stand -->
+<rect x="532" y="270" width="8" height="60" fill="#2d5578"/><rect x="650" y="270" width="8" height="60" fill="#2d5578"/>
+<path d="M538 276 L654 324 M654 276 L538 324" stroke="#2d5578" stroke-width="4"/>
+<rect x="524" y="328" width="24" height="6" fill="#2d5578"/><rect x="642" y="328" width="24" height="6" fill="#2d5578"/>
+<rect x="520" y="268" width="150" height="6" fill="#9fb4c4"/>
+<rect class="lv lv2" x="522" y="172" width="146" height="96" fill="#6ec1ea" opacity=".92"/>
+<rect x="520" y="170" width="150" height="100" fill="#fff" opacity=".14" stroke="#7a6a3a" stroke-width="3"/>
+<path d="M520 170 L534 160 H684 V260 L670 270 M670 170 L684 160 M660 200 h8 M660 230 h8" fill="none" stroke="#7a6a3a" stroke-width="2" opacity=".7"/>
+<text class="t" x="694" y="200">RECEIVING TANK</text>
+<text class="s" x="694" y="216">ถังรับน้ำ (Elevated)</text>
+<text class="am" x="694" y="236">▲ LEVEL UP</text>
+<text class="tl" x="610" y="140">Free discharge</text>
+
+<!-- pump + motor -->
+<rect x="256" y="308" width="182" height="9" fill="#14263f"/>
+<rect x="280" y="300" width="20" height="8" fill="#1d5f96"/>
+<rect x="352" y="300" width="14" height="8" fill="#14263f"/><rect x="402" y="300" width="14" height="8" fill="#14263f"/>
+<rect x="262" y="266" width="8" height="20" fill="#2a6fa8" stroke="#0e2f4d"/>
+<rect x="280" y="246" width="20" height="14" fill="#1d5f96" stroke="#0e2f4d"/>
+<rect x="277" y="242" width="26" height="5" fill="#2a6fa8" stroke="#0e2f4d"/>
+<circle cx="290" cy="276" r="28" fill="#1d5f96" stroke="#0e2f4d" stroke-width="2"/>
+<circle cx="290" cy="276" r="17" fill="#4aa3d8" opacity=".7"/>
+<g class="spin"><circle cx="290" cy="276" r="14" fill="none" stroke="#0e2f4d" stroke-width="1.5"/><path d="M278 276 H302 M290 264 V288" stroke="#0e2f4d" stroke-width="2"/><circle cx="290" cy="276" r="4" fill="#0e2f4d"/></g>
+<rect x="316" y="266" width="14" height="20" fill="#1d5f96" stroke="#0e2f4d"/>
+<rect x="330" y="265" width="14" height="22" fill="#ffc828" fill-opacity=".25" stroke="#d9a400" stroke-width="2"/>
+<rect x="344" y="250" width="80" height="52" rx="6" fill="#14263f"/>
+<path d="M356 254 V298 M364 254 V298 M372 254 V298 M380 254 V298 M388 254 V298 M396 254 V298 M404 254 V298 M412 254 V298" stroke="#2b4a73" stroke-width="1.5"/>
+<rect x="372" y="238" width="26" height="12" rx="2" fill="#0f1f33"/>
+<rect x="424" y="258" width="6" height="36" rx="3" fill="#0f1f33"/>
+<text class="t" x="250" y="300" text-anchor="end">Suction pipe</text>
+<text class="t" x="290" y="334" text-anchor="middle">Centrifugal pump</text>
+<text class="s" x="290" y="350" text-anchor="middle">ปั๊มหอยโข่ง</text>
+<text class="t" x="400" y="334" text-anchor="middle">Motor</text>
+<text class="s" x="400" y="350" text-anchor="middle">มอเตอร์</text>
+
+<!-- pressure gauge -->
+<path d="M297 176 H309" stroke="#666" stroke-width="3"/>
+<circle cx="322" cy="172" r="13" fill="#fff" stroke="#666" stroke-width="2"/>
+<path d="M322 172 L328 164" stroke="#c00" stroke-width="1.5"/>
+<text class="tl" x="344" y="168">Discharge pressure</text>
+<text class="s" x="344" y="184">Pump adds pressure</text>
+
+<!-- dimensions -->
+<path class="d" d="M225 84 V276 M219 84 H231 M219 276 H231"/>
+<text class="t" id="dgH" transform="translate(211 180) rotate(-90)" text-anchor="middle">H</text>
+<text class="s" transform="translate(197 180) rotate(-90)" text-anchor="middle">ระยะแนวดิ่ง Vertical</text>
+<path class="d" d="M290 34 H595 M290 28 V40 M595 28 V40"/>
+<text class="t" id="dgL" x="442" y="26" text-anchor="middle">L</text>
+<text class="s" x="442" y="54" text-anchor="middle">Delivery pipe · ระยะทางราบ Horizontal</text>
+
+<!-- info panel -->
+<rect x="10" y="10" width="172" height="118" fill="var(--hi)" stroke="var(--text)" stroke-width="2"/>
+<text class="t" id="dgQ" x="22" y="28">Q</text>
+<text class="t" id="dgD" x="22" y="45">D</text>
+<text class="s" id="dgP" x="22" y="60">P</text>
+<text class="t" id="dgV" x="22" y="78">V</text>
+<text class="s" x="22" y="96">Total Head / ผลรวม Head</text>
+<text class="t" id="dgT" x="22" y="120" style="font-size:22px">T</text>
+</svg></div>
+<div class="note">Not to scale. Pipe thickness follows the selected diameter and the pipe outline turns red when velocity is above 2.5 m/s. / ไม่ได้วาดตามมาตราส่วน</div>
+</div>
+
+<div class="card" style="margin-top:16px">
+<h2>Max flow rate per pipe size / อัตราไหลสูงสุดต่อขนาดท่อ</h2>
+<div class="scroll"><table id="tbl"></table></div>
+<div class="note">Rows highlight the current diameter. Max flow values are from the Excel table (25–200 mm only).</div>
+</div>
+</div>
+
+<script>
+const PIPES={"Plastic":1.5e-5,"Steel":4.5e-5,"Fibreglass (Generic)":3e-5,"Flowtite GRP":2.9e-5};
+const SIZES=[[4,25],[7,32],[12,40],[18,50],[30,65],[45,80],[70,100],[150,150],[280,200]];
+const $=id=>document.getElementById(id);
+const ds=$("d"),ts=$("t");
+const DIAMS=[[8,'¼"'],[10,'⅜"'],[15,'½"'],[20,'¾"'],[25,'1"'],[32,'1¼"'],[40,'1½"'],[50,'2"'],[65,'2½"'],[80,'3"'],[100,'4"'],[125,'5"'],[150,'6"'],[200,'8"'],[250,'10"'],[300,'12"'],[350,'14"'],[400,'16"'],[450,'18"'],[500,'20"'],[600,'24"'],[700,'28"'],[750,'30"'],[800,'32"'],[900,'36"'],[1000,'40"'],[1050,'42"'],[1200,'48"'],[1350,'54"'],[1500,'60"']];
+DIAMS.forEach(([d,i])=>ds.add(new Option(d+' mm = '+i,d)));
+Object.keys(PIPES).forEach(k=>ts.add(new Option(k,k)));
+ts.value="Steel";ds.insertBefore(new Option("— Select / เลือก —",""),ds.firstChild);ds.value="";
+["q","h","l"].forEach(i=>{$(i).value=""});
+$("q").placeholder="e.g. 20";$("h").placeholder="e.g. 8";$("l").placeholder="e.g. 68";
+const f=(x,n=2)=>isFinite(x)?x.toLocaleString("en-US",{minimumFractionDigits:n,maximumFractionDigits:n}):"–";
+const num=id=>parseFloat($(id).value)||0;
+
+const touched={};
+["q","d","h","l"].forEach(id=>$(id).addEventListener("blur",()=>{touched[id]=true;calc()}));
+function valid(){
+ const bad={q:$("q").value.trim()===""||!(num("q")>0),d:ds.value==="",h:$("h").value.trim()==="",l:$("l").value.trim()===""};
+ let ok=true;
+ Object.keys(bad).forEach(id=>{$(id).style.borderColor=(bad[id]&&touched[id])?"#d50000":"";if(bad[id])ok=false});
+ if(!ok)blank();
+ return ok;
+}
+function blank(){
+ ["total","rg","rp","rv","rf","rm","lu","vel","re","eps","ff","hl"].forEach(i=>{$(i).textContent="–"});
+ $("vbadge").innerHTML="";
+ $("msg").innerHTML='<div class="msg bad">Please fill in the required fields (*) to see the result. / กรอกช่องที่มี * ให้ครบเพื่อดูผลคำนวณ</div>';
+ $("dgH").textContent="H";$("dgL").textContent="L";$("dgQ").textContent="Q = –";$("dgD").textContent="Ø –";$("dgP").textContent=ts.value;$("dgV").textContent="V = –";$("dgT").textContent="–";
+}
+function calc(){
+ if(!valid())return;
+ const Q=num("q"),D=parseFloat(ds.value),H=num("h"),L=num("l")+($("iv").checked?num("h"):0),P=num("p"),VH=num("vh"),nu=num("nu"),sf=1+num("sf")/100;
+ const eps=PIPES[ts.value],Dm=D/1000,Qs=Q/3600;
+ const V=Qs/(Math.PI*Dm*Dm/4);
+ const Re=V*Dm/(nu*1e-6);
+ let ff=0;
+ if(Re>0) ff=Re<3000?64/Re:0.25/Math.pow(Math.log10(eps/Dm/3.7+5.74/Math.pow(Re,0.9)),2);
+ const hl=ff*L*V*V/(2*Dm*9.81);
+ const mt=$("mb").value==="t",fr=hl*sf,total=mt?(H+P+VH+hl)*sf:H+P+VH+fr;
+ $("total").textContent=f(total);
+ $("rg").textContent=f(H)+" m";$("rp").textContent=f(P)+" m";$("rv").textContent=f(VH)+" m";$("rf").textContent=f(hl)+" m";$("rm").textContent=f(total-(H+P+VH+hl))+" m";$("rml").textContent="Safety margin (+"+f(num("sf"),num("sf")%1?1:0)+"%) on "+(mt?"total head":"friction loss");
+ $("vel").textContent=f(V);
+ $("vbadge").innerHTML=V<2.5?'<span class="badge ok">OK</span>':'<span class="badge bad">Not OK</span>';
+ $("re").textContent=f(Re,0);$("eps").textContent=eps.toExponential(1);$("lu").textContent=f(L);$("ff").textContent=f(ff,4);$("hl").textContent=f(hl);
+ const need=SIZES.find(s=>s[0]>=Q);
+ let m="";
+ if(V>=2.5){
+  const ok=DIAMS.find(s=>{const v=Qs/(Math.PI*Math.pow(s[0]/1000,2)/4);return v<2.5});
+  m='<div class="msg bad">Velocity is above 2.5 m/s. '+(ok?'Try a pipe of '+ok[0]+' mm ('+ok[1]+') or larger.':'No size in the list fits.')+'</div>';
+ } else if(need&&D>need[1]*3) m='<div class="msg ok">Velocity is within the limit.</div>';
+ else m='<div class="msg ok">Velocity is within the limit (2.5 m/s).</div>';
+ $("msg").innerHTML=m;
+ $("dgH").textContent="H = "+f(H,H%1?1:0)+" m";
+ $("dgL").textContent="L = "+f(num("l"),num("l")%1?1:0)+" m";
+ $("dgQ").textContent="Q = "+f(Q)+" m\u00b3/h";
+ $("dgD").textContent="\u00d8 "+D+" mm ("+(DIAMS.find(x=>x[0]===D)||[0,"-"])[1]+")";
+ $("dgP").textContent=ts.value;
+ $("dgV").textContent="V = "+f(V)+" m/s \u00b7 "+(V<2.5?"OK":"NOT OK");
+ $("dgT").textContent=f(total)+" m";
+ const pw=Math.round(5+11*Math.min(1,Math.max(0,Math.log(D/8)/Math.log(250/8))));
+ document.querySelectorAll(".pp").forEach(e=>{e.style.strokeWidth=pw+4;e.style.stroke=V<2.5?"#1d4d73":"var(--bad)"});
+ document.querySelectorAll(".pi").forEach(e=>{e.style.strokeWidth=pw});
+ let h='<tr><td>Max flow (m³/h)</td>'+SIZES.map(s=>'<td class="'+(s[1]==D?'sel':'')+'">'+s[0]+'</td>').join("")+'</tr>';
+ h+='<tr><td>Diameter (mm)</td>'+SIZES.map(s=>'<td class="'+(s[1]==D?'sel':'')+'">'+s[1]+'</td>').join("")+'</tr>';
+ $("tbl").innerHTML=h;
+ document.querySelectorAll("#tbl td").forEach(td=>{if(td.cellIndex>0)td.style.textAlign="center"});
+}
+document.querySelectorAll("input,select").forEach(e=>e.addEventListener("input",calc));
+const FIELDS={q:0,d:0,t:0,h:0,l:0,
+ p:"ใส่เฉพาะเมื่อปลายท่อมีแรงดัน (ถังปิด/หัวฉีด) · Leave 0 for open discharge.",
+ vh:"ปล่อย 0 ได้ · Not calculated by the app. V²/2g is usually small.",
+ nu:"1 cSt = น้ำประมาณ 20 °C · Change only for other liquids or very different temperature.",
+ sf:"ค่าเผื่อของ Friction loss · 15% = ×1.15, use 0 for no margin."};
+Object.entries(FIELDS).forEach(([id,hint])=>{
+ const lb=document.querySelector('label[for="'+id+'"]');if(!lb)return;
+ if(!hint){const r=document.createElement("span");r.className="req";r.textContent=" *";r.title="Required";lb.appendChild(r);return}
+ const o=document.createElement("span");o.className="opt";o.textContent="optional";lb.appendChild(o);
+ const b=document.createElement("button");b.type="button";b.className="q";b.textContent="?";b.setAttribute("aria-expanded","false");b.setAttribute("aria-label","Details");lb.appendChild(b);
+ const h=document.createElement("div");h.className="hint";h.hidden=true;h.textContent=hint;lb.nextElementSibling.after(h);
+ b.onclick=e=>{e.preventDefault();h.hidden=!h.hidden;b.setAttribute("aria-expanded",String(!h.hidden))};
+});
+const nt=document.querySelector(".grid .note");
+if(nt)nt.innerHTML="<b>*</b> Required. Other fields are optional: the defaults suit water (1 cSt), safety margin 15%, velocity limit 2.5 m/s. Tap <b>?</b> for details.";
+const thBtn=$("thBtn"),th=$("theory");
+function showTheory(on){
+ th.hidden=!on;
+ document.querySelectorAll(".wrap > *").forEach(el=>{if(el===th||el===thBtn||el.classList.contains("top"))return;el.style.display=on?"none":""});
+ thBtn.textContent=on?"\u2190 Back to calculator / \u0e01\u0e25\u0e31\u0e1a\u0e2b\u0e19\u0e49\u0e32\u0e04\u0e33\u0e19\u0e27\u0e13":"\ud83d\udcd8 Theory / \u0e17\u0e24\u0e29\u0e0e\u0e35\u0e2a\u0e39\u0e15\u0e23\u0e17\u0e35\u0e48\u0e43\u0e0a\u0e49";
+ window.scrollTo(0,0);
+}
+thBtn.onclick=()=>showTheory(th.hidden);
+calc();
+</script>
+</body>
+</html>
