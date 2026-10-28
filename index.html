@@ -59,6 +59,22 @@ html:root[data-skin="safety"] .card{border-radius:3px}
 .btn{display:inline-flex;align-items:center;gap:8px;margin:0 0 16px;padding:9px 16px;border:2px solid #111;border-radius:3px;background:var(--hi);color:#111;font:700 14px system-ui,"Noto Sans Thai",sans-serif;cursor:pointer}
 .btn:hover{background:#ffd633}
 #thBtn,#crBtn,#pwBtn,#szBtn{margin-right:8px}
+#pnBtn[aria-expanded=true],#hnBtn[aria-expanded=true]{background:#111;color:#ffd60a}
+.sub{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px}
+.sub[hidden]{display:none}
+.sub .btn{margin:0!important}
+.sub .btn[aria-pressed=true]{background:#111;color:#ffd60a}
+.wrap{padding-bottom:96px}
+#tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:2px solid #111;z-index:20;padding-bottom:env(safe-area-inset-bottom,0px)}
+#tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 6px 8px;border:0;background:none;color:var(--muted);font:700 13px system-ui,"Noto Sans Thai",sans-serif;cursor:pointer}
+#tabs button span{font-size:20px;line-height:1}
+#tabs button[aria-pressed=true]{background:#ffd60a;color:#111}
+
+.pnote{margin:12px 0 0;padding:12px 14px;border-left:6px solid #ffd60a;background:var(--hi);font-size:14px;line-height:1.7}
+.pnote p{margin:2px 0}
+.pnote .tt{font-weight:700;margin-bottom:4px}
+.rec{margin-top:14px;padding:12px 14px;border:2px solid #111;border-radius:4px;background:#ffd60a;color:#111;font-weight:700;font-size:16px}
+.rec small{display:block;font-weight:400;font-size:12px;margin-top:4px}
 .sz-top input{max-width:280px}
 .sz-h{display:flex;align-items:baseline;gap:10px;margin:22px 0 10px;padding-left:10px;border-left:6px solid #ffd60a}
 .sz-h b{font-size:15px}
@@ -131,13 +147,8 @@ body{overscroll-behavior-y:none;padding-left:env(safe-area-inset-left,0px);paddi
 <div class="top"><h1>Head Loss Calculator / โปรแกรมคำนวณ Head Loss</h1><div class="credit">By. Tonglaong</div></div>
 <p class="sub">Friction loss in pipe (Darcy–Weisbach, Swamee–Jain) and total head for pump selection</p>
 
-<button type="button" id="thBtn" class="btn">📘 Theory / ทฤษฎีสูตรที่ใช้</button>
-
-<button type="button" id="crBtn" class="btn">📈 Head loss for steel pipe</button>
-
-<button type="button" id="pwBtn" class="btn">⚡ Shaft Power Calculation</button>
-
-<button type="button" id="szBtn" class="btn">⚙️ Motor Rating</button>
+<div class="sub" id="subHead"><button type="button" id="calcBtn" class="btn" data-v="calc">🧮 Calculator / คำนวณ</button><button type="button" id="thBtn" class="btn" data-v="th">📘 Theory / ทฤษฎี</button><button type="button" id="crBtn" class="btn" data-v="cr">📈 Head loss for steel pipe</button></div>
+<div class="sub" id="subMotor" hidden><button type="button" id="pwBtn" class="btn" data-v="pw">⚡ Shaft Power</button><button type="button" id="szBtn" class="btn" data-v="sz">⚙️ Motor Rating</button><button type="button" id="mthBtn" class="btn" data-v="mth">📘 Theory (BHP) / ทฤษฎี</button></div>
 
 <section id="theory" class="card" hidden>
 <h2>Theory / ทฤษฎีและสูตรที่ใช้</h2>
@@ -216,6 +227,12 @@ Hf = 1.112 m   →   × 1.15 = 1.278 m</div>
 <div id="pe"><label for="pn">η from the pump curve / ค่า η จาก Curve Pump (0.75 or 75)</label><input id="pn" type="number" inputmode="decimal" step="any" min="0" placeholder="e.g. 0.75"></div>
 </div>
 <button type="button" id="pcalc" class="btn" style="margin:14px 0 0">Use Q and Total Head from calculator</button>
+<button type="button" id="pnBtn" class="btn" aria-expanded="false" style="margin:14px 0 0 8px">📝 Note</button>
+<div id="pnote" class="pnote" hidden>
+<p class="tt">Note / หมายเหตุ: เลือกมอเตอร์ใหญ่เกินไป</p>
+<p><b>ข้อเสีย:</b> ราคาแพง และเปลืองไฟ</p>
+<p><b>ข้อดี:</b> ถ้าปั๊มวิ่งปลาย Curve ปั๊มจะไม่ทริป (ตัดการทำงาน)</p>
+</div>
 <div id="pres" style="margin-top:16px"></div>
 <p class="note">Safety by power, using BHP before safety: &lt; 7.5 kW: 20–25% · 7.5–37 kW: 10–15% · &gt; 37 kW: 10%. Exactly 7.5 or 37 kW counts in the middle band.</p>
 </section>
@@ -226,6 +243,33 @@ Hf = 1.112 m   →   × 1.15 = 1.278 m</div>
 <p class="note" style="margin:6px 0 0">Standard motor ratings in kW with the equivalent Hp, as listed in the table.</p>
 <div id="szGrid"></div>
 <div id="szEmpty" class="msg bad" hidden>No match / ไม่พบค่าที่ค้นหา</div>
+</section>
+
+<section id="motorTheory" class="card" hidden>
+<h2>Theory (BHP) / ทฤษฎีกำลังเพลา</h2>
+<p>กำลังเพลา (Brake Horse Power, BHP) คือกำลังที่มอเตอร์ต้องจ่ายให้ปั๊ม คำนวณจาก Flow, Head และประสิทธิภาพปั๊ม แล้วบวกค่าเผื่อ (Safety)</p>
+<div class="eqm"><div class="ml"><b>BHP</b> = <span class="br">(</span><span class="fr"><span>ρ × Q × H</span><span>367 × η</span></span><span class="br">)</span> + Safety</div></div>
+<h3>Variables / ตัวแปร</h3>
+<ul>
+<li><b>ρ</b> – Specific gravity. The app uses 1 (clean water).</li>
+<li><b>Q</b> – Flow rate, m³/h</li>
+<li><b>H</b> – Total Dynamic Head, m</li>
+<li><b>η</b> – Pump efficiency. Take it from the pump curve. For a rough estimate: End suction 0.6–0.8, Self-priming 0.3–0.5.</li>
+<li><b>BHP</b> – Power in kW. The constant 367 fits Q in m³/h, H in m and power in kW for water.</li>
+</ul>
+<h3>Safety by power / ค่าเผื่อตามกำลัง</h3>
+<table class="pt">
+<tr><th>BHP (before safety)</th><th>Safety</th></tr>
+<tr><td>&lt; 7.5 kW</td><td>20–25%</td></tr>
+<tr><td>7.5–37 kW</td><td>10–15%</td></tr>
+<tr><td>&gt; 37 kW</td><td>10%</td></tr>
+</table>
+<h3>Worked example / ตัวอย่าง</h3>
+<div class="eq">Q = 20 m³/h, H = 11.78 m, η = 0.70, ρ = 1
+BHP = 20 × 11.78 / (367 × 0.70) = 0.92 kW
+Safety 20–25%  →  1.10–1.15 kW</div>
+<h3>Choosing the motor / การเลือกมอเตอร์</h3>
+<p>เลือกขนาดมอเตอร์มาตรฐานที่ใหญ่กว่าค่าที่คำนวณได้ (ดูตาราง Motor Rating) และดู Note ในหน้า Shaft Power เรื่องข้อดีข้อเสียของมอเตอร์ใหญ่เกิน</p>
 </section>
 
 <div class="grid">
@@ -266,6 +310,7 @@ Hf = 1.112 m   →   × 1.15 = 1.278 m</div>
 <tr><td>Friction loss in pipe</td><td id="rf">–</td></tr>
 <tr><td id="rml">Safety margin</td><td id="rm">–</td></tr>
 </table>
+<button type="button" id="toMotor" class="btn" style="margin:14px 0 0;width:100%">⚡ Next: Calculate motor power / ต่อไป: คำนวณกำลังมอเตอร์ →</button>
 </div>
 <div class="card">
 <h2>Calculated data / ข้อมูลที่คำนวณได้</h2>
@@ -389,8 +434,15 @@ Hf = 1.112 m   →   × 1.15 = 1.278 m</div>
 <div class="scroll"><table id="tbl"></table></div>
 <div class="note">Rows highlight the current diameter. Max flow values are from the Excel table (25–200 mm only).</div>
 </div>
+<div id="hnWrap"><button type="button" id="hnBtn" class="btn" aria-expanded="false" style="margin:16px 0 0">📝 Note</button>
+<div id="hnote" class="pnote" hidden>
+<p class="tt">Note / หมายเหตุ: ท่อก่อนเข้าปั๊ม (Suction pipe)</p>
+<p>ท่อก่อนเข้าปั๊มควรมีขนาดมากกว่าหรือเท่ากับขนาดทางเข้าปั๊ม</p>
+<p><b>ข้อเสีย (ถ้าท่อใหญ่เกินไป):</b> แพง และถ้าความเร็วน้ำช้าจะทำให้เกิดตะกอนอุดตันท่อ</p>
+</div></div>
 </div>
 
+<nav id="tabs" aria-label="Sections"><button type="button" data-c="head" aria-pressed="true"><span>💧</span>Head</button><button type="button" data-c="motor" aria-pressed="false"><span>⚙️</span>Motor / มอเตอร์</button></nav>
 <script>
 const PIPES={"Plastic":1.5e-5,"Steel":4.5e-5,"Fibreglass (Generic)":3e-5,"Flowtite GRP":2.9e-5};
 const SIZES=[[4,25],[7,32],[12,40],[18,50],[30,65],[45,80],[70,100],[150,150],[280,200]];
@@ -542,9 +594,11 @@ thBtn.onclick=()=>setView(th.hidden?"th":"calc");
 crBtn.onclick=()=>setView(cr.hidden?"cr":"calc");
 pwBtn.onclick=()=>setView(pwSec.hidden?"pw":"calc");
 szBtn.onclick=()=>setView(szSec.hidden?"sz":"calc");
+$("pnBtn").onclick=()=>{const n=$("pnote");n.hidden=!n.hidden;$("pnBtn").setAttribute("aria-expanded",String(!n.hidden))};
 (function(){
  const grid=$("szGrid"),q=$("szQ"),empty=$("szEmpty");
  const M=[["0.37","0.50"],["0.55","0.75"],["0.75","1.0"],["1.1","1.5"],["1.5","2.0"],["2.2","3.0"],["3","4.0"],["4","5.5"],["5.5","7.5"],["7.5","10"],["11","15"],["15","20"],["18.5","25"],["22","30"],["30","40"],["37","50"],["45","60"],["55","75"],["75","100"],["90","125"],["110","150"],["132","175"],["160","220"],["200","270"]];
+ window.MOTORS=M;
  const groups=[["Small / \u0e40\u0e25\u0e47\u0e01","0.37\u20135.5 kW",k=>k<7.5],["Medium / \u0e01\u0e25\u0e32\u0e07","7.5\u201337 kW",k=>k>=7.5&&k<=37],["Large / \u0e43\u0e2b\u0e0d\u0e48","45\u2013200 kW",k=>k>37]];
  function render(){
   const t=q.value.trim().toLowerCase().replace(/kw|hp/g,"").trim(),tn=parseFloat(t);
@@ -571,11 +625,17 @@ szBtn.onclick=()=>setView(szSec.hidden?"sz":"calc");
   if(pm.value==="c"){let e=parseFloat(pn.value);if(e>1)e=e/100;if(e>0&&e<=1)etas=[e]}else etas=ETA[pm.value];
   if(!(sg>0&&Q>0&&H>0)||!etas){out.innerHTML='<div class="msg bad">Fill in Q, H and η to see the result. / กรอก Q, H และ η ให้ครบเพื่อดูผลคำนวณ</div>';return}
   let h='<table class="pt"><tr><th>η</th><th>BHP (kW)</th><th>Safety</th><th>BHP + Safety (kW)</th></tr>';
+  const his=[];
   etas.forEach(e=>{
-   const P=sg*Q*H/(367*e),b=band(P),lo=P*(1+b[0]/100),hi=P*(1+b[1]/100),same=b[0]===b[1];
+   const P=sg*Q*H/(367*e),b=band(P),lo=P*(1+b[0]/100),hi=P*(1+b[1]/100),same=b[0]===b[1];his.push(hi);
    h+='<tr><td>'+e.toFixed(2)+'</td><td>'+f2(P)+'</td><td>'+(same?b[0]+'%':b[0]+'–'+b[1]+'%')+'</td><td>'+(same?f2(lo):f2(lo)+' – '+f2(hi))+'</td></tr>';
   });
   h+='</table>';
+  const rows=his.map(v=>(window.MOTORS||[]).find(x=>parseFloat(x[0])>=v-1e-9)||null);
+  rows.sort((a,b)=>(a?parseFloat(a[0]):1e9)-(b?parseFloat(b[0]):1e9));
+  const labs=[];
+  rows.forEach(m=>{const l=m?m[0]+' kW ('+m[1]+' Hp)':'above 200 kW, check with the supplier';if(labs.indexOf(l)<0)labs.push(l)});
+  h+='<div class="rec">Recommended motor: '+labs.join(' \u2013 ')+'<small>Next standard size at or above BHP + Safety (upper value). If the pump can run at the end of its curve, check the power there too.</small></div>';
   if(etas.length>1)h+='<p class="note">Estimate only: a higher η gives a lower power. Use η from the pump curve when you have it.</p>';
   out.innerHTML=h;
  }
@@ -588,6 +648,39 @@ szBtn.onclick=()=>setView(szSec.hidden?"sz":"calc");
  run();
 })();
 calc();
+
+let lastH="calc",lastM="pw";
+const catOf=v=>["calc","th","cr"].indexOf(v)>=0?"head":"motor";
+function setView(v){
+ const secs={th:$("theory"),cr:$("curve"),pw:$("power"),sz:$("sizes"),mth:$("motorTheory")};
+ const subs=[$("subHead"),$("subMotor")];
+ const cat=catOf(v);
+ if(cat==="head")lastH=v;else lastM=v;
+ Object.keys(secs).forEach(k=>{secs[k].hidden=v!==k});
+ const keep=Object.values(secs).concat(subs);
+ document.querySelectorAll(".wrap > *").forEach(el=>{if(keep.indexOf(el)>=0||el.classList.contains("top"))return;el.style.display=v==="calc"?"":"none"});
+ $("subHead").hidden=cat!=="head";$("subMotor").hidden=cat!=="motor";
+ document.querySelectorAll(".sub button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.v===v)));
+ document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.c===cat)));
+ window.scrollTo(0,0);
+}
+document.querySelectorAll(".sub button").forEach(b=>{b.onclick=()=>setView(b.dataset.v)});
+document.querySelectorAll("#tabs button").forEach(b=>{b.onclick=()=>setView(b.dataset.c==="head"?lastH:lastM)});
+setView("calc");
+
+$("toMotor").onclick=()=>{
+ const b=$("toMotor");
+ if(window.lastRes){
+  $("pq").value=window.lastRes.Q;$("ph").value=window.lastRes.total.toFixed(2);
+  $("pq").dispatchEvent(new Event("input",{bubbles:true}));
+  setView("pw");
+ }else{
+  const t=b.textContent;b.textContent="Fill in the calculator first / \u0e01\u0e23\u0e2d\u0e01\u0e02\u0e49\u0e2d\u0e21\u0e39\u0e25\u0e43\u0e2b\u0e49\u0e04\u0e23\u0e1a\u0e01\u0e48\u0e2d\u0e19";
+  setTimeout(()=>{b.textContent=t},2000);
+ }
+};
+
+$("hnBtn").onclick=()=>{const n=$("hnote");n.hidden=!n.hidden;$("hnBtn").setAttribute("aria-expanded",String(!n.hidden))};
 </script>
 </body>
 </html>
